@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Professional Word Editor - Ultimate Version</title>
+    
+    <!-- ================= PWA & NATIVE APP META TAGS ================= -->
+    <meta name="application-name" content="Word Pro">
+    <meta name="apple-mobile-web-app-title" content="Word Pro">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#2b579a">
+    
+    <!-- iOS App Icon -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='38' fill='%232b579a'/%3E%3Cpath fill='white' d='M52 135l19-67 15 45 15-45 19 67h-13l-11-39-9 34-9-34-11 39z'/%3E%3C/svg%3E">
+    <link rel="manifest" id="dynamic-manifest">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts Imports -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@300;400;600&family=Atma:wght@400;600&family=Baloo+Da+2:wght@400;600&family=Baskervville:ital@0;1&family=Caveat:wght@400;600&family=Cinzel:wght@400;700&family=Cormorant+Garamond:wght@400;600&family=Dancing+Script:wght@400;600&family=Fira+Code:wght@400;600&family=Galada&family=Handlee&family=Hind+Siliguri:wght@300;400;500;600;700&family=Homemade+Apple&family=Indie+Flower&family=Josefin+Sans:wght@400;600&family=Kalam:wght@400;700&family=Lato:wght@400;700&family=Libre+Baskerville:wght@400;700&family=Libre+Franklin:wght@400;600&family=Lobster&family=Lora:wght@400;600&family=Merriweather:wght@400;700&family=Mina:wght@400;700&family=Montserrat:wght@600;700&family=Mukta+Mahee:wght@400;600&family=Noto+Sans+Bengali:wght@300;400;500;600;700&family=Noto+Serif+Bengali:wght@400;600&family=Open+Sans:wght@400;600&family=Oswald:wght@400;600&family=Pacifico&family=Patrick+Hand&family=Playfair+Display:wght@400;600;700&family=Poppins:wght@400;600&family=Raleway:wght@400;600&family=Righteous&family=Roboto:wght@400;500;700&family=Sacramento&family=Satisfy&family=Shadows+Into+Light&family=Source+Sans+3:wght@400;600&family=Tiro+Bangla:ital@0;1&family=Alex+Brush&family=Courgette&family=Great+Vibes&family=Kaushan+Script&family=Tangerine:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        :root {
+            --word-blue: #2b579a; --word-bg: #f3f2f1; --word-border: #e1dfdd; --word-hover: #e1dfdd;
+            --page-width: 794px;
+            --page-height: 1123px;
+            --page-gap: 40px;
+            --page-margin: 96px;
+        }
+        
+        html, body { 
+            height: 100%; margin: 0; padding: 0; 
+            font-family: 'Calibri', 'Hind Siliguri', sans-serif;
+            background-color: #e5e7eb; 
+            overflow: hidden; 
+            display: flex; flex-direction: column;
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .workspace-scroll::-webkit-scrollbar { width: 12px; }
+        .workspace-scroll::-webkit-scrollbar-track { background: #e5e7eb; }
+        .workspace-scroll::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 6px; border: 3px solid #e5e7eb; }
+        .workspace-scroll::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+
+        /* --- UI Classes (Fixed Top Bars) --- */
+        .title-bar { background-color: var(--word-blue); color: white; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; height: 30px; font-size: 12px; user-select: none; flex-shrink: 0; z-index: 50;}
+        .tabs-bar { background-color: var(--word-blue); display: flex; padding: 0 10px; align-items: flex-end; overflow-x: auto; white-space: nowrap; flex-shrink: 0; z-index: 50;}
+        .tab-btn { padding: 4px 12px; cursor: pointer; color: white; font-size: 13px; margin-right: 2px; transition: background 0.2s; border-top-left-radius: 2px; border-top-right-radius: 2px;}
+        .tab-btn:hover { background-color: rgba(255,255,255,0.1); }
+        .tab-btn.active { background-color: var(--word-bg); color: var(--word-blue); font-weight: bold;}
+        .tab-btn.file-btn { background-color: #1a365d; }
+
+        .ribbon-area { background-color: var(--word-bg); border-bottom: 1px solid var(--word-border); display: flex; flex-direction: column; flex-shrink: 0; z-index: 50;}
+        .ribbon-groups { display: none; padding: 5px; gap: 5px; overflow-x: auto; scroll-behavior: smooth; white-space: nowrap; height: 95px;}
+        .ribbon-groups.active { display: flex; } 
+        
+        .r-group { border-right: 1px solid var(--word-border); padding-right: 8px; display: flex; flex-direction: column; justify-content: space-between; min-width: max-content;}
+        .r-group:last-child { border-right: none; }
+        .r-row { display: flex; gap: 3px; align-items: center; }
+        .r-label { font-size: 10px; color: #6b7280; text-align: center; width: 100%; margin-top: auto; padding-top: 2px;}
+        
+        .r-btn { background: transparent; border: 1px solid transparent; border-radius: 2px; padding: 3px 5px; cursor: pointer; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; font-size: 13px; color: #3b3a39;}
+        .r-btn:hover { background-color: var(--word-hover); border-color: #c8c6c4; }
+        .r-btn-small { padding: 3px; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; }
+        .r-select { border: 1px solid #8a8886; font-size: 12px; padding: 2px; outline: none; background: white;}
+
+        .quick-access-bar { background-color: var(--word-bg); border-bottom: 1px solid #d1d5db; display: flex; align-items: center; padding: 2px 10px; gap: 8px; font-size: 12px; color: #3b3a39; overflow-x: auto; flex-shrink: 0; z-index: 50;}
+        
+        .styles-box { display: flex; border: 1px solid #c8c6c4; background: white; padding: 2px; gap: 2px; }
+        .style-item { border: 1px solid transparent; padding: 4px; text-align: center; cursor: pointer; min-width: 60px;}
+        .style-item:hover { border-color: #c8c6c4; background: #f3f2f1; }
+
+        /* --- Bottom Bars --- */
+        .status-bar { background-color: var(--word-bg); border-top: 1px solid var(--word-border); color: #3b3a39; font-size: 11px; display: flex; justify-content: space-between; align-items: center; padding: 2px 15px; flex-shrink: 0; white-space: nowrap; overflow-x: auto; gap: 10px; z-index: 50;}
+        .status-item { cursor: pointer; padding: 2px 5px; }
+        .status-item:hover { background-color: var(--word-hover); }
+
+        .mobile-bottom-bar { display: none; background-color: #ffffff; border-top: 1px solid #d1d5db; padding: 8px 10px; justify-content: flex-start; align-items: center; flex-shrink: 0; overflow-x: auto; gap: 8px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 50;}
+        .m-btn { background: #f3f2f1; border: 1px solid #e1dfdd; border-radius: 6px; padding: 8px 14px; font-size: 16px; color: var(--word-blue); display: inline-flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; transition: all 0.2s;}
+        .m-btn:active { background: #e5e7eb; transform: scale(0.95);}
+
+        @media (max-width: 768px) {
+            .mobile-bottom-bar { display: flex; }
+            .status-bar { display: none; }
+        }
+
+        /* --- Workspace & Scrolling --- */
+        .workspace { flex: 1; overflow-y: auto; overflow-x: auto; background-color: #e5e7eb; display: flex; justify-content: center; padding: 30px 10px 60px 10px; touch-action: pan-x pan-y;}
+        
+        #zoomWrapper {
+            transform-origin: top center;
+            transition: transform 0.15s ease-out;
+            width: var(--page-width);
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        /* ================= NEW AUTOMATIC A4 PAGE SYSTEM ================= */
+        #document-wrapper {
+            width: var(--page-width);
+            display: flex;
+            flex-direction: column;
+            gap: var(--page-gap);
+        }
+
+        .page {
+            width: var(--page-width);
+            height: var(--page-height);
+            background-color: #ffffff;
+            box-shadow: 0px 6px 15px rgba(0,0,0,0.2);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            padding: var(--page-margin) var(--page-margin) 0 var(--page-margin);
+        }
+
+        /* ================= FIXED ORNAMENTAL BORDER SYSTEM ================= */
+        .page-border-layer {
+            position: absolute;
+            top: 15px; bottom: 15px; left: 15px; right: 15px;
+            pointer-events: none;
+            z-index: 10;
+            display: none;
+        }
+        .page-border-layer[class*="border-s"] { display: block; }
+
+        /* BORDER GAP FIX - REMOVED GLOBAL BACKGROUND WHITE */
+        .pb-text { position: absolute; font-family: 'Cinzel', 'Montserrat', sans-serif; font-weight: 700; z-index: 2;}
+        .pb-text span { background: white; padding: 0 6px; display: inline-flex; align-items: center; gap: 4px; }
+        
+        .pb-top { top: 0; left: 50%; width: 100%; transform: translate(-50%, -50%); display: flex; justify-content: space-between; align-items: center; font-size: 11px; padding: 0 20px; }
+        .pb-bottom { bottom: 0; left: 50%; transform: translate(-50%, 50%); font-size: 11px; padding: 0 15px; letter-spacing: 0.5px;}
+        .pb-left { left: 0; top: 50%; transform: translate(-50%, -50%) rotate(-90deg); font-size: 9px; padding: 0 10px; letter-spacing: 1px; white-space: nowrap;}
+        .pb-right { right: 0; top: 50%; transform: translate(50%, -50%) rotate(90deg); font-size: 9px; padding: 0 10px; letter-spacing: 1px; white-space: nowrap;}
+
+        .corner { position: absolute; width: 10px; height: 10px; background: white; z-index: 2; display: none; }
+        .pb-tl { top: -5px; left: -5px; } .pb-tr { top: -5px; right: -5px; } .pb-bl { bottom: -5px; left: -5px; } .pb-br { bottom: -5px; right: -5px; }
+
+        /* TOGGLE DECORATIONS CLASS */
+        body.hide-decorations .page-header, 
+        body.hide-decorations .page-border-layer {
+            display: none !important;
+        }
+
+        /* 20 TYPES OF BORDER STYLES */
+        .border-s1 { border: 4px double #000; } .border-s1 .corner { display: block; border: 1px solid #000; } .border-s1 .pb-text { color: #000; }
+        .border-s2 { border: 4px double #1e3a8a; } .border-s2 .corner { display: block; border: 1px solid #1e3a8a; } .border-s2 .pb-text { color: #1e3a8a; }
+        .border-s3 { border: 2px solid #000; } .border-s3 .pb-text { color: #000; }
+        .border-s4 { border: 2px solid #2563eb; } .border-s4 .pb-text { color: #2563eb; }
+        .border-s5 { border: 2px dashed #000; } .border-s5 .pb-text { color: #000; }
+        .border-s6 { border: 2px dashed #3b82f6; } .border-s6 .pb-text { color: #3b82f6; }
+        .border-s7 { border: 3px dotted #000; } .border-s7 .pb-text { color: #000; }
+        .border-s8 { border: 4px groove #9ca3af; } .border-s8 .pb-text { color: #4b5563; }
+        .border-s9 { border: 4px ridge #6b7280; } .border-s9 .pb-text { color: #374151; }
+        .border-s10 { border: 2px solid #000; border-radius: 20px; } .border-s10 .pb-text { color: #000; }
+        .border-s11 { border: 2px solid #1d4ed8; border-radius: 20px; } .border-s11 .pb-text { color: #1d4ed8; }
+        .border-s12 { border: 3px inset #d1d5db; } .border-s12 .pb-text { color: #4b5563; }
+        .border-s13 { border: 3px outset #d1d5db; } .border-s13 .pb-text { color: #4b5563; }
+        .border-s14 { border: 3px double #b8860b; } .border-s14 .pb-text { color: #b8860b; }
+        .border-s15 { border: 4px double #064e3b; } .border-s15 .pb-text { color: #064e3b; }
+        .border-s16 { border: 4px double #991b1b; } .border-s16 .pb-text { color: #991b1b; }
+        .border-s17 { border: 1px solid #000; } .border-s17 .pb-text { color: #000; }
+        .border-s18 { border: 1px solid #1e3a8a; } .border-s18 .pb-text { color: #1e3a8a; }
+        .border-s19 { box-shadow: 0 0 0 1px #000, 0 0 0 3px #fff, 0 0 0 4px #000; } .border-s19 .pb-text { color: #000; }
+        .border-s20 { border: 1px solid #0f172a; } .border-s20 .pb-text { color: #0f172a; }
+
+        /* ================= INJECTED CUSTOM HEADER CSS ================= */
+        .page-header { min-height: 40px; margin-top: -15px; position: relative; z-index: 20; }
+        .compact-header { border-bottom: 3px double #1e3a8a; background: linear-gradient(to right, #ffffff, #f4f7fa, #ffffff); color: inherit; padding: 8px 10px 6px 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; position: relative; }
+        .header-edit { cursor: text; pointer-events: auto; padding: 1px 4px; border-radius: 3px; border: 1px solid transparent; transition: all 0.2s; display: inline-block;}
+        .header-edit:hover { background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3); }
+        .header-edit:focus { outline: none; background: rgba(59, 130, 246, 0.15); border-color: #3b82f6; }
+        .topic-edit { pointer-events: auto; cursor: text; min-width: 150px; display: inline-block; border-bottom: 1px dashed #93c5fd;}
+        .topic-edit:empty:before { content: attr(data-placeholder); color: #94a3b8; cursor: text; font-weight: normal;}
+        
+        /* SHADOW REMOVED PER USER REQUEST */
+        .text-3d { font-weight: bold; text-shadow: none !important; }
+
+        /* Content logic */
+        .page-content { flex: 1; outline: none; overflow-y: hidden; word-wrap: break-word; line-height: 1.6; font-size: 16px; text-align: left; margin-bottom: 25px; position: relative; z-index: 20; }
+        .page-content:empty:before { content: attr(data-placeholder); color: #9ca3af; pointer-events: none; }
+        .page-content div, .page-content p { margin-bottom: 0.8em; break-inside: auto; }
+        .page-content table { width: 100%; border-collapse: collapse; margin-bottom: 1em; }
+        .page-content table, .page-content th, .page-content td { border: 1px solid #94a3b8; padding: 8px; }
+
+        /* Footer logic */
+        .page-footer { height: 30px; display: flex; justify-content: center; align-items: center; color: #9ca3af; font-size: 12px; border-top: 1px dashed transparent; user-select: none; position: absolute; bottom: 15px; left: 0; width: 100%; z-index: 20; }
+
+        /* SMART SPACING LOGIC */
+        .w-spacing-100 { word-spacing: normal; } .w-spacing-75 { word-spacing: -0.5px; } .w-spacing-50 { word-spacing: -1px; } .w-spacing-25 { word-spacing: -1.5px; }
+        .l-spacing-200 { line-height: 2.0 !important; } .l-spacing-150 { line-height: 1.5 !important; }
+        .l-spacing-115 { line-height: 1.15 !important; } .l-spacing-100 { line-height: 1.0 !important; }
+
+        /* ================= FIXED PERFECT PRINT LOGIC ================= */
+        @media print {
+            html, body { height: 100% !important; max-height: 100% !important; overflow: visible !important; background-color: white !important; margin: 0 !important; padding: 0 !important; }
+            .title-bar, .tabs-bar, .ribbon-area, .quick-access-bar, .status-bar, .mobile-bottom-bar, #toast, #historyModal, #customModal, #globalFontMegaMenu, #globalFontSizeMenu { display: none !important; }
+            .workspace { padding: 0 !important; margin: 0 !important; background-color: white !important; overflow: visible !important; display: block !important; height: auto !important; min-height: 0 !important; }
+            #zoomWrapper, #document-wrapper { transform: none !important; zoom: 1 !important; width: 100% !important; gap: 0 !important; display: block !important; margin: 0 !important; padding: 0 !important; height: auto !important; }
+            
+            /* Physical Paper Mapping */
+            .page {
+                box-shadow: none !important; margin: 0 !important;
+                padding: var(--page-margin) var(--page-margin) 0 var(--page-margin) !important;
+                width: 210mm !important; height: 297mm !important; max-height: 297mm !important;
+                box-sizing: border-box !important; page-break-inside: avoid !important; break-inside: avoid !important; overflow: hidden !important;
+                print-color-adjust: exact !important; -webkit-print-color-adjust: exact !important; position: relative;
+                break-before: always !important; page-break-before: always !important;
+            }
+            .page.print-first-page { break-before: avoid !important; page-break-before: avoid !important; }
+            .page:last-child { page-break-after: avoid !important; break-after: avoid !important; }
+
+            .page-border-layer { display: block !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;}
+            .page-border-layer[class*="border-none"] { display: none !important; }
+            
+            .empty-page { display: none !important; height: 0 !important; width: 0 !important; margin: 0 !important; padding: 0 !important; border: none !important; overflow: hidden !important; page-break-before: avoid !important; break-before: avoid !important; page-break-after: avoid !important; break-after: avoid !important; }
+            .page-footer { display: flex !important; }
+            .topic-edit:empty { display: none !important; margin: 0 !important; padding: 0 !important; height: 0 !important; border: none !important; }
+            .header-edit { border: none !important; background: transparent !important; }
+            .topic-edit { border-bottom: none !important; }
+            
+            /* SHADOW REMOVED PER USER REQUEST */
+            .text-3d { text-shadow: none !important; }
+            
+            @page { size: A4 portrait; margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PWA Install Script -->
+    <script>
+        (function initPWA() {
+            const manifestJSON = {
+                "name": "Word Pro", "short_name": "Word Pro", "display": "standalone",
+                "start_url": window.location.href.split('?')[0], "background_color": "#e5e7eb", "theme_color": "#2b579a",
+                "icons": [{ "src": "data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%232b579a'/%3E%3Cpath fill='white' d='M140 360l50-180 40 120 40-120 50 180h-35l-30-105-25 90-25-90-30 105z'/%3E%3C/svg%3E", "sizes": "512x512", "type": "image/svg+xml" }]
+            };
+            document.getElementById('dynamic-manifest').href = URL.createObjectURL(new Blob([JSON.stringify(manifestJSON)], { type: 'application/json' }));
+        })();
+    </script>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-900/95 text-white px-6 py-3 rounded shadow-2xl transition-all duration-300 opacity-0 pointer-events-none z-[200] flex items-center gap-2 font-bold text-sm tracking-wide">
+        <i class="fa-solid fa-circle-info text-blue-400"></i> <span id="toastMessage"></span>
+    </div>
+
+    <!-- Custom Modal System -->
+    <div id="customModal" class="hidden fixed inset-0 bg-black/50 z-[300] flex items-center justify-center p-4">
+        <div class="bg-white rounded shadow-xl w-full max-w-sm overflow-hidden border border-gray-300">
+            <div class="bg-[#2b579a] text-white px-4 py-2 font-semibold text-sm flex items-center gap-2" id="modalTitle">
+                <i class="fa-solid fa-pencil"></i> <span>Notice</span>
+            </div>
+            <div class="p-4 bg-[#f3f2f1]">
+                <p id="modalMessage" class="text-sm text-gray-800 mb-3"></p>
+                <input type="text" id="modalInput" class="hidden w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#2b579a] mb-4 bg-white">
+                <div class="flex justify-end gap-2">
+                    <button id="modalCancel" class="px-4 py-1.5 text-sm text-gray-700 bg-gray-200 hover:bg-gray-300 border border-gray-300 rounded transition-colors">Cancel</button>
+                    <button id="modalOk" class="px-4 py-1.5 text-sm bg-[#2b579a] text-white hover:bg-blue-800 rounded transition-colors">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GLOBAL MEGA MENUS (Rendered at root to prevent clipping in Ribbon) -->
+    
+    <!-- Mega Menu: Font Family -->
+    <div id="globalFontMegaMenu" class="hidden absolute w-72 sm:w-[450px] bg-white border border-gray-300 shadow-2xl z-[500] flex flex-col rounded overflow-hidden">
+        <div class="flex bg-gray-100 border-b w-full">
+           <button onclick="switchFontTab('eng', this)" class="font-tab flex-1 py-2 text-[11px] font-bold border-b-2 border-blue-600 text-blue-600 tracking-wide uppercase transition">English</button>
+           <button onclick="switchFontTab('ben', this)" class="font-tab flex-1 py-2 text-[11px] font-bold border-b-2 border-transparent text-gray-600 tracking-wide uppercase transition">Bengali</button>
+           <button onclick="switchFontTab('hand', this)" class="font-tab flex-1 py-2 text-[11px] font-bold border-b-2 border-transparent text-gray-600 tracking-wide uppercase transition">Handwriting</button>
+           <button onclick="switchFontTab('mixed', this)" class="font-tab flex-1 py-2 text-[11px] font-bold border-b-2 border-transparent text-gray-600 tracking-wide uppercase transition">Smart Mixed</button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-2 workspace-scroll max-h-[50vh] bg-white" id="fontTabContent">
+            <!-- Content injected by JS -->
+        </div>
+    </div>
+
+    <!-- Mega Menu: Font Size -->
+    <div id="globalFontSizeMenu" class="hidden absolute w-16 bg-white border border-gray-300 shadow-xl z-[500] max-h-[40vh] overflow-y-auto workspace-scroll text-sm rounded">
+        <!-- Content injected by JS -->
+    </div>
+
+
+    <!-- ================= 1. TITLE BAR ================= -->
+    <div class="title-bar">
+        <div class="flex items-center gap-4 w-1/3">
+            <button onclick="autoSave()" class="hover:bg-white/20 px-2 py-1 rounded" title="Save (Ctrl+S)"><i class="fa-regular fa-floppy-disk"></i></button>
+        </div>
+        <div class="text-center w-1/3 flex justify-center items-center gap-2 font-semibold tracking-wide bg-blue-800/50 rounded px-4 py-0.5 truncate">
+            Document1 - Word
+        </div>
+        <div class="flex justify-end items-center gap-3 w-1/3 text-sm">
+            <span class="hidden sm:block truncate"><i class="fa-solid fa-user-circle"></i> User</span>
+            <button class="hover:bg-white/20 px-2 py-1 hidden sm:block"><i class="fa-solid fa-window-minimize"></i></button>
+            <button class="hover:bg-white/20 px-2 py-1 hidden sm:block"><i class="fa-regular fa-window-restore"></i></button>
+            <button class="hover:bg-red-500 px-2 py-1"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+    </div>
+
+    <!-- ================= 2. TABS BAR ================= -->
+    <div class="tabs-bar no-scrollbar" id="mainTabs">
+        <div class="tab-btn file-btn" onclick="openHistoryModal()">File</div>
+        <div class="tab-btn active" onclick="switchTab(this, 'tab-home')">Home</div>
+        <div class="tab-btn" onclick="switchTab(this, 'tab-insert')">Insert</div>
+        <div class="tab-btn" onclick="switchTab(this, 'tab-draw')">Draw</div>
+        <div class="tab-btn" onclick="switchTab(this, 'tab-layout')">Layout</div>
+        <div class="tab-btn hidden sm:block" onclick="switchTab(this, 'tab-references')">References</div>
+        <div class="tab-btn hidden sm:block" onclick="switchTab(this, 'tab-review')">Review</div>
+        <div class="tab-btn" onclick="switchTab(this, 'tab-view')">View</div>
+        <div class="tab-btn ml-auto bg-blue-800 rounded px-3 relative" onclick="toggleShareDropdown()" id="shareDropdownContainer">
+            <i class="fa-solid fa-share-nodes"></i> Share
+            <div id="shareDropdown" class="absolute top-8 right-0 w-48 bg-white border border-gray-200 shadow-xl hidden z-50 text-gray-800 rounded">
+                <button onclick="downloadTxt();" class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2 text-sm border-b"><i class="fa-regular fa-file-lines text-gray-500"></i> Export Text</button>
+                <button onclick="exportPDF();" class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2 text-sm"><i class="fa-solid fa-file-pdf text-red-500"></i> Export PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 3. RIB बुन्देल CONTENT ================= -->
+    <div class="ribbon-area">
+        <!-- হোম ট্যাব (HOME TAB) -->
+        <div id="tab-home" class="ribbon-groups active no-scrollbar">
+            <!-- ক্লিপবোর্ড গ্রুপ (CLIPBOARD GROUP) -->
+            <div class="r-group">
+                <div class="flex gap-1 h-full items-center">
+                    <button onclick="printDocument()" class="r-btn" style="height:100%" title="Print Document (Ctrl+P)">
+                        <i class="fa-solid fa-print text-[22px] text-blue-700 mb-1"></i>
+                        <span class="text-[11px] font-bold">Print</span>
+                    </button>
+                    <div class="flex flex-col gap-0.5 justify-center">
+                        <button onclick="createNewDocument()" class="r-btn r-btn-small flex-row gap-1 w-auto" title="New File"><i class="fa-solid fa-file-circle-plus text-green-600"></i></button>
+                        <!-- পেস্ট এবং কাট বাগ ফিক্সড (Paste and cut bug fixed) -->
+                        <button onclick="customPaste()" class="r-btn r-btn-small flex-row gap-1 w-auto" title="Paste"><i class="fa-solid fa-paste text-yellow-600"></i></button>
+                        <button onclick="customCut()" class="r-btn r-btn-small flex-row gap-1 w-auto" title="Cut"><i class="fa-solid fa-scissors text-gray-600"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ফন্ট গ্রুপ (FONT GROUP) -->
+            <div class="r-group">
+                <div class="flex gap-1 mb-1">
+                    <button onclick="toggleFontMenu(this)" id="fontBtnDisplay" class="r-select w-28 sm:w-36 flex justify-between items-center text-left bg-white cursor-pointer font-sans" title="Font Style (Mega Menu)">
+                        <span class="truncate" id="currentFontDisplay">Calibri</span> <i class="fa-solid fa-chevron-down text-[10px] text-gray-500 ml-1"></i>
+                    </button>
+                    <div class="flex items-center gap-0.5">
+                        <button onclick="toggleFontSizeMenu(this)" id="fontSizeDisplay" class="r-select w-12 flex justify-between items-center text-left bg-white cursor-pointer font-sans" title="Font Size">
+                            <span id="currentFontSize">16</span> <i class="fa-solid fa-chevron-down text-[10px] text-gray-500 ml-1"></i>
+                        </button>
+                        <button onclick="changeFontSizeBy(1)" class="r-btn r-btn-small ml-0.5 relative text-blue-800" title="Increase Font Size"><i class="fa-solid fa-A font-bold text-sm"></i><i class="fa-solid fa-caret-up absolute top-0.5 right-0.5 text-[8px]"></i></button>
+                        <button onclick="changeFontSizeBy(-1)" class="r-btn r-btn-small relative text-blue-800" title="Decrease Font Size"><i class="fa-solid fa-A text-xs"></i><i class="fa-solid fa-caret-down absolute top-0.5 right-0.5 text-[8px]"></i></button>
+                    </div>
+                </div>
+                <div class="flex gap-0.5">
+                    <button onmousedown="event.preventDefault();" onclick="execCmd('bold')" class="r-btn r-btn-small font-bold" title="Bold (Ctrl+B)">B</button>
+                    <button onmousedown="event.preventDefault();" onclick="execCmd('italic')" class="r-btn r-btn-small italic font-serif" title="Italic (Ctrl+I)">I</button>
+                    <button onmousedown="event.preventDefault();" onclick="execCmd('underline')" class="r-btn r-btn-small underline" title="Underline (Ctrl+U)">U</button>
+                    <button onmousedown="event.preventDefault();" onclick="execCmd('strikeThrough')" class="r-btn r-btn-small line-through" title="Strikethrough">ab</button>
+                    <div class="w-px h-4 bg-gray-300 mx-1 mt-1"></div>
+                    <!-- ফন্ট কালার ফিক্সড: saveSelection যুক্ত করা হয়েছে (Font color fixed) -->
+                    <label class="r-btn r-btn-small cursor-pointer border-b-4 border-yellow-400" title="Text Highlight" onmousedown="saveSelection()">
+                        <i class="fa-solid fa-pen" style="color:black"></i>
+                        <input type="color" oninput="applyColor('hiliteColor', this.value); this.parentElement.style.borderColor = this.value;" class="w-0 h-0 opacity-0 absolute" value="#ffff00">
+                    </label>
+                    <label class="r-btn r-btn-small cursor-pointer border-b-4 border-red-600 font-bold" title="Font Color" onmousedown="saveSelection()">
+                        A
+                        <input type="color" oninput="applyColor('foreColor', this.value); this.parentElement.style.borderColor = this.value;" class="w-0 h-0 opacity-0 absolute">
+                    </label>
+                    <button onclick="execCmd('removeFormat')" class="r-btn r-btn-small ml-1 text-gray-500" title="Clear Formatting"><i class="fa-solid fa-eraser"></i></button>
+                </div>
+            </div>
+
+            <!-- প্যারাগ্রাফ গ্রুপ (PARAGRAPH GROUP) -->
+            <div class="r-group">
+                <div class="flex gap-0.5 mb-1">
+                    <button onmousedown="event.preventDefault();" onclick="execCmd('insertUnorderedList')" class="r-btn r-btn-small"><i class="fa-solid fa-list-ul"></i></button>
+                    <button onmousedown="event.preventDefault();" onclick="execCmd('insertOrderedList')" class="r-btn r-btn-small"><i class="fa-solid fa-list-ol"></i></button>
+                    <div class="w-px h-4 bg-gray-300 mx-1 mt-1"></div>
+                    <button onmousedown="event.preventDefault();" onclick="execCmd('outdent')" class="r-btn r-btn-small" title="Decrease Indent"><i class="fa-solid fa-indent fa-flip-horizontal"></i></button>
+                    <button onmousedown="event.preventDefault();" onclick="execCmd('indent')" class="r-btn r-btn-small" title="Increase Indent"><i class="fa-solid fa-indent"></i></button>
+                </div>
+                <div class="flex gap-0.5">
+                    <button onmousedown="event.preventDefault();" onclick="execCmd('justifyLeft')" class="r-btn r-btn-small"><i class="fa-solid fa-align-left"></i></button>
+                    <button onmousedown="event.preventDefault();" onclick="execCmd('justifyCenter')" class="r-btn r-btn-small"><i class="fa-solid fa-align-center"></i></button>
+                    <button onmousedown="event.preventDefault();" onclick="execCmd('justifyRight')" class="r-btn r-btn-small"><i class="fa-solid fa-align-right"></i></button>
+                    <button onmousedown="event.preventDefault();" onclick="execCmd('justifyFull')" class="r-btn r-btn-small"><i class="fa-solid fa-align-justify"></i></button>
+                    <div class="w-px h-4 bg-gray-300 mx-1 mt-1"></div>
+                    <select id="lineSpacingSelector" onchange="changeLineSpacing(this.value)" class="r-select w-14" title="Line Spacing">
+                        <option value="200">2.0</option><option value="150" selected>1.5</option><option value="115">1.1</option><option value="100">1.0</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- এডিটিং গ্রুপ (EDITING GROUP) -->
+            <div class="r-group hidden sm:flex">
+                <div class="flex flex-col gap-0.5 mt-1">
+                    <button onclick="findText()" class="r-btn r-btn-small flex-row gap-1 w-auto justify-start"><i class="fa-solid fa-magnifying-glass text-blue-600"></i> Find</button>
+                    <button onclick="replaceText()" class="r-btn r-btn-small flex-row gap-1 w-auto justify-start"><i class="fa-solid fa-arrow-right-arrow-left text-gray-600"></i> Replace</button>
+                </div>
+            </div>
+
+            <!-- ওয়ার্ড প্রো টুলস (WORD PRO TOOLS) -->
+            <div class="r-group">
+                <div class="flex gap-1 h-full items-center px-2">
+                    <button id="btnAutoBold" onclick="applyAutoBold()" class="r-btn text-purple-700 font-bold border border-purple-200 bg-purple-50 shadow-sm transition-all" style="height: 100%" title="Auto Bold – Automatically identify and bold questions, headings and important content.">
+                        <i class="fa-solid fa-wand-magic-sparkles text-lg"></i><span>Auto Bold</span>
+                    </button>
+                    <button id="btnAutoFix" onclick="applyAutoFix()" class="r-btn text-green-700 font-bold border border-green-200 bg-green-50 shadow-sm transition-all" style="height: 100%" title="AutoFix – Remove unnecessary spaces and blank lines">
+                        <i class="fa-solid fa-check-double text-lg"></i><span>AutoFix</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ইনসার্ট ট্যাব (INSERT TAB) -->
+        <div id="tab-insert" class="ribbon-groups no-scrollbar">
+            <div class="r-group"><div class="flex gap-1 h-full"><button onclick="execCmd('insertHorizontalRule')" class="r-btn h-full"><i class="fa-solid fa-file-lines text-xl text-blue-500 mb-1"></i><span class="text-[11px]">Break</span></button><button onclick="insertTable()" class="r-btn h-full"><i class="fa-solid fa-table text-xl text-orange-600 mb-1"></i><span class="text-[11px]">Table</span></button></div></div>
+            <div class="r-group"><div class="flex gap-1 h-full"><label class="r-btn h-full cursor-pointer"><i class="fa-regular fa-image text-xl text-green-600 mb-1"></i><span class="text-[11px]">Pictures</span><input type="file" accept="image/*" onchange="insertImage(this)" class="hidden"></label></div></div>
+            <div class="r-group"><div class="flex gap-1 h-full"><button onclick="insertLink()" class="r-btn h-full"><i class="fa-solid fa-link text-xl text-gray-600 mb-1"></i><span class="text-[11px]">Link</span></button></div></div>
+        </div>
+
+        <!-- লেআউট ট্যাব (LAYOUT TAB) -->
+        <div id="tab-layout" class="ribbon-groups no-scrollbar">
+            <div class="r-group bg-blue-50/50">
+                <div class="flex flex-col gap-1 px-1 justify-center h-full">
+                    <span class="text-[11px] font-bold text-blue-800"><i class="fa-regular fa-square-full mr-1"></i> Page Border:</span>
+                    <select id="borderSelector" onchange="changeBorderStyle(this.value)" class="r-select w-36 font-semibold border-blue-300">
+                        <option value="border-none">None (Hidden)</option>
+                        <option value="border-s1" selected>Style 1 (Classic Image)</option>
+                        <option value="border-s2">Style 2 (Double Blue)</option>
+                        <option value="border-s3">Style 3 (Solid Black)</option>
+                        <option value="border-s4">Style 4 (Solid Blue)</option>
+                        <option value="border-s5">Style 5 (Dashed Black)</option>
+                        <option value="border-s6">Style 6 (Dashed Blue)</option>
+                        <option value="border-s7">Style 7 (Dotted Black)</option>
+                        <option value="border-s8">Style 8 (Groove 3D)</option>
+                        <option value="border-s9">Style 9 (Ridge 3D)</option>
+                        <option value="border-s10">Style 10 (Rounded Black)</option>
+                        <option value="border-s11">Style 11 (Rounded Blue)</option>
+                        <option value="border-s12">Style 12 (Inset Silver)</option>
+                        <option value="border-s13">Style 13 (Outset Silver)</option>
+                        <option value="border-s14">Style 14 (Elegant Gold)</option>
+                        <option value="border-s15">Style 15 (Forest Green)</option>
+                        <option value="border-s16">Style 16 (Red Double)</option>
+                        <option value="border-s17">Style 17 (Thin Black)</option>
+                        <option value="border-s18">Style 18 (Thin Blue)</option>
+                        <option value="border-s19">Style 19 (Triple Black)</option>
+                        <option value="border-s20">Style 20 (Navy Minimal)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="r-group">
+                <div class="flex gap-1 h-full items-center">
+                    <div class="flex flex-col gap-1 px-1">
+                        <div class="flex items-center gap-1">
+                            <span class="text-[11px] font-semibold text-gray-700 w-12">Size:</span>
+                            <select id="pageSizeSelector" onchange="changePageSize(this.value)" class="r-select w-24"><option value="a4,portrait,210,297" selected>A4</option><option value="letter,portrait,215.9,279.4">Letter</option></select>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <span class="text-[11px] font-semibold text-gray-700 w-12">Margins:</span>
+                            <select id="marginSelector" onchange="changeMargin(this.value)" class="r-select w-24">
+                                <option value="25.4">Normal</option>
+                                <option value="12.7" selected>Narrow (Default)</option>
+                                <option value="50">Wide</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="r-group">
+                <div class="flex gap-1 h-full items-center px-2">
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[11px] font-semibold text-gray-700">Columns:</span>
+                        <select id="columnSelector" onchange="changeColumns(this.value)" class="r-select w-28">
+                            <option value="1" selected>One Column</option>
+                            <option value="2">Two Columns</option>
+                            <option value="3">Three Columns</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ভিউ ট্যাব (VIEW TAB) -->
+        <div id="tab-view" class="ribbon-groups no-scrollbar">
+            <div class="r-group">
+                <div class="flex gap-1 h-full items-center px-2">
+                    <button onclick="setZoom(100)" class="r-btn h-full"><i class="fa-solid fa-magnifying-glass text-xl text-blue-600 mb-1"></i><span class="text-[11px]">100%</span></button>
+                    <button onclick="fitToScreen()" class="r-btn h-full"><i class="fa-solid fa-expand text-xl text-gray-600 mb-1"></i><span class="text-[11px]">Fit Page</span></button>
+                </div>
+            </div>
+            <div class="r-group">
+                <div class="flex gap-1 h-full items-center px-2">
+                    <label class="flex items-center gap-1.5 cursor-pointer text-[11px] font-bold text-gray-700 bg-white border border-gray-300 px-2 py-1 rounded hover:bg-gray-50 shadow-sm" title="Turn Header and Border On/Off">
+                        <input type="checkbox" id="toggleDecorationsBtn" checked onchange="toggleDecorations(this.checked)" class="w-3.5 h-3.5 accent-blue-600 cursor-pointer">
+                        Show Header & Border
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ড্র ট্যাব (DRAW TAB) -->
+        <div id="tab-draw" class="ribbon-groups no-scrollbar justify-center items-center text-sm text-gray-500 italic">
+            Draw tools active. (Placeholders for future native drawing support)
+        </div>
+
+        <!-- রেফারেন্স এবং রিভিউ ট্যাব (নতুন করে ফিক্স করা হয়েছে) (REFERENCES & REVIEW TABS - ADDED FIX) -->
+        <div id="tab-references" class="ribbon-groups no-scrollbar justify-center items-center text-sm text-gray-500 italic">
+            References tools active. Add Footnotes, Citations, and Index here.
+        </div>
+        <div id="tab-review" class="ribbon-groups no-scrollbar justify-center items-center text-sm text-gray-500 italic">
+            Review tools active. Check Spelling, Word Count, and Accessibility here.
+        </div>
+    </div>
+
+    <!-- ================= 4. QUICK ACCESS TOOLBAR (Desktop) ================= -->
+    <div class="quick-access-bar hidden sm:flex shrink-0 no-scrollbar">
+        <button onclick="autoSave()" class="hover:bg-gray-300 px-2 py-0.5 rounded text-blue-700" title="Save"><i class="fa-solid fa-floppy-disk"></i></button>
+        <button onclick="execCmd('undo')" class="hover:bg-gray-300 px-2 py-0.5 rounded text-blue-700" title="Undo"><i class="fa-solid fa-rotate-left"></i></button>
+        <button onclick="execCmd('redo')" class="hover:bg-gray-300 px-2 py-0.5 rounded text-blue-700" title="Redo"><i class="fa-solid fa-rotate-right"></i></button>
+        <div class="w-px h-3 bg-gray-400 mx-1"></div>
+        <button onclick="printDocument()" class="hover:bg-gray-300 px-2 py-0.5 rounded text-gray-700 font-bold" title="Print"><i class="fa-solid fa-print"></i></button>
+    </div>
+
+    <!-- ================= 5. MAIN WORKSPACE (Multi-Page System) ================= -->
+    <div class="workspace workspace-scroll" id="editor-screen">
+        <div id="zoomWrapper">
+            <div id="document-wrapper"></div>
+        </div>
+    </div>
+
+    <!-- ================= 6. DESKTOP STATUS BAR ================= -->
+    <div class="status-bar shrink-0">
+        <div class="flex items-center gap-4">
+            <span class="status-item font-bold"><span id="wordCount">0</span> words</span>
+            <span class="status-item" onclick="toggleSpellCheck()"><i class="fa-solid fa-spell-check text-green-600 mr-1" id="spellIcon"></i> English</span>
+        </div>
+        <div class="flex items-center gap-3 ml-auto">
+            <i class="fa-regular fa-file-lines status-item bg-gray-200" title="Print Layout"></i>
+            <div class="flex items-center gap-2 border-l border-gray-300 pl-3">
+                <button onclick="setZoomByBtn(0.9)" class="status-item"><i class="fa-solid fa-minus text-[10px]"></i></button>
+                <input type="range" id="zoomSlider" min="50" max="250" value="100" class="w-20" oninput="setZoom(this.value)">
+                <button onclick="setZoomByBtn(1.1)" class="status-item"><i class="fa-solid fa-plus text-[10px]"></i></button>
+                <span id="zoomDisplay" class="status-item font-semibold w-8 text-right">100%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 7. MOBILE BOTTOM TOOLBAR ================= -->
+    <div class="mobile-bottom-bar no-scrollbar">
+        <button onclick="createNewDocument()" class="m-btn" title="New File"><i class="fa-solid fa-file-circle-plus"></i></button>
+        <button onclick="customCut()" class="m-btn" title="Cut"><i class="fa-solid fa-scissors"></i></button>
+        <button onclick="customPaste()" class="m-btn" title="Paste"><i class="fa-solid fa-paste"></i></button>
+        <div class="w-px h-6 bg-gray-300 mx-0.5"></div>
+        <button onclick="execCmd('undo')" class="m-btn" title="Undo"><i class="fa-solid fa-rotate-left"></i></button>
+        <button onclick="execCmd('redo')" class="m-btn" title="Redo"><i class="fa-solid fa-rotate-right"></i></button>
+        <div class="w-px h-6 bg-gray-300 mx-0.5"></div>
+        <button onclick="applyAutoFix()" class="m-btn text-green-700 shadow-sm" title="AutoFix"><i class="fa-solid fa-check-double mr-1"></i> Fix</button>
+        <button onclick="applyAutoBold()" class="m-btn text-purple-700 shadow-sm" title="Auto Bold"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Bold</button>
+        <div class="w-px h-6 bg-gray-300 mx-0.5"></div>
+        <button onclick="setZoomByBtn(0.8)" class="m-btn" title="Zoom Out"><i class="fa-solid fa-minus"></i></button>
+        <button onclick="setZoomByBtn(1.2)" class="m-btn" title="Zoom In"><i class="fa-solid fa-plus"></i></button>
+        <button onclick="fitToScreen()" class="m-btn bg-blue-50 border-blue-200" title="Fit to Screen"><i class="fa-solid fa-expand"></i></button>
+    </div>
+
+    <!-- ================= HISTORY MODAL ================= -->
+    <div id="historyModal" class="hidden fixed inset-0 bg-black/50 z-[110] flex items-center justify-center p-4">
+        <div class="bg-white border border-[#2b579a] shadow-2xl w-full max-w-lg flex flex-col max-h-[85vh]">
+            <div class="p-3 bg-[#2b579a] text-white flex justify-between items-center text-sm font-bold">
+                <span><i class="fa-solid fa-file-word mr-2"></i> Document System Storage</span>
+                <button onclick="closeHistoryModal()" class="hover:bg-red-500 px-2 py-1"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-3 bg-[#f3f2f1] flex gap-2 border-b border-[#e1dfdd]">
+                <input type="text" id="newFileName" placeholder="Document Name..." class="flex-1 p-2 text-sm border outline-none">
+                <button onclick="saveNewFile()" class="bg-[#2b579a] text-white px-4 py-1 text-sm hover:bg-blue-800 font-bold">Save As</button>
+            </div>
+            <div id="historyList" class="p-4 overflow-y-auto flex-1 flex flex-col gap-2 workspace-scroll bg-white"></div>
+        </div>
+    </div>
+
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <script>
+        // Global Variables
+        let currentZoom = 100;
+        let isSpellCheck = true;
+        let savedRange = null; 
+        let activeEditor = null;
+        const wrapper = document.getElementById('document-wrapper');
+        let currentBorderStyle = 'border-s1';
+
+        let preAutoFixState = null, isAutoFixActive = false;
+        let preAutoBoldState = null, isAutoBoldActive = false;
+        let lastAutoAction = null;
+
+        document.execCommand('styleWithCSS', false, true);
+
+        // ফন্ট ডাটা (Font Data)
+        const fontData = {
+            eng: [
+                {name: 'Times New Roman', clean: 'Times New Roman', font: "'Times New Roman', Times, serif"}, 
+                {name: 'Georgia', clean: 'Georgia', font: "Georgia, serif"},
+                {name: 'Garamond', clean: 'Garamond', font: "'Garamond', serif"}, 
+                {name: 'Baskerville', clean: 'Baskervville', font: "'Baskervville', serif"},
+                {name: 'Cambria', clean: 'Cambria', font: "'Cambria', serif"}, 
+                {name: 'Palatino', clean: 'Palatino Linotype', font: "'Palatino Linotype', 'Book Antiqua', Palatino, serif"},
+                {name: 'Libre Baskerville', clean: 'Libre Baskerville', font: "'Libre Baskerville', serif"}, 
+                {name: 'Merriweather', clean: 'Merriweather', font: "'Merriweather', serif"},
+                {name: 'Lora', clean: 'Lora', font: "'Lora', serif"}, 
+                {name: 'Playfair Display', clean: 'Playfair Display', font: "'Playfair Display', serif"},
+                {name: 'Montserrat', clean: 'Montserrat', font: "'Montserrat', sans-serif"}, 
+                {name: 'Poppins', clean: 'Poppins', font: "'Poppins', sans-serif"},
+                {name: 'Roboto', clean: 'Roboto', font: "'Roboto', sans-serif"}, 
+                {name: 'Open Sans', clean: 'Open Sans', font: "'Open Sans', sans-serif"},
+                {name: 'Raleway', clean: 'Raleway', font: "'Raleway', sans-serif"}, 
+                {name: 'Oswald', clean: 'Oswald', font: "'Oswald', sans-serif"},
+                {name: 'Cinzel', clean: 'Cinzel', font: "'Cinzel', serif"}, 
+                {name: 'Cormorant Garamond', clean: 'Cormorant Garamond', font: "'Cormorant Garamond', serif"},
+                {name: 'Libre Franklin', clean: 'Libre Franklin', font: "'Libre Franklin', sans-serif"}, 
+                {name: 'Source Sans 3', clean: 'Source Sans 3', font: "'Source Sans 3', sans-serif"}
+            ],
+            ben: [
+                {name: 'Noto Serif Bengali', clean: 'Noto Serif Bengali', font: "'Noto Serif Bengali', serif"}, 
+                {name: 'Noto Sans Bengali', clean: 'Noto Sans Bengali', font: "'Noto Sans Bengali', sans-serif"},
+                {name: 'Hind Siliguri', clean: 'Hind Siliguri', font: "'Hind Siliguri', sans-serif"}, 
+                {name: 'Tiro Bangla', clean: 'Tiro Bangla', font: "'Tiro Bangla', serif"},
+                {name: 'Anek Bangla', clean: 'Anek Bangla', font: "'Anek Bangla', sans-serif"}, 
+                {name: 'Baloo Da 2', clean: 'Baloo Da 2', font: "'Baloo Da 2', cursive"},
+                {name: 'Atma', clean: 'Atma', font: "'Atma', cursive"}, 
+                {name: 'Mina', clean: 'Mina', font: "'Mina', sans-serif"},
+                {name: 'Galada', clean: 'Galada', font: "'Galada', cursive"}, 
+                {name: 'Mukta Mahee', clean: 'Mukta Mahee', font: "'Mukta Mahee', sans-serif"}
+            ],
+            hand: [
+                {name: 'Caveat', clean: 'Caveat', font: "'Caveat', cursive"}, 
+                {name: 'Kalam', clean: 'Kalam', font: "'Kalam', cursive"},
+                {name: 'Patrick Hand', clean: 'Patrick Hand', font: "'Patrick Hand', cursive"}, 
+                {name: 'Handlee', clean: 'Handlee', font: "'Handlee', cursive"},
+                {name: 'Homemade Apple', clean: 'Homemade Apple', font: "'Homemade Apple', cursive"}, 
+                {name: 'Dancing Script', clean: 'Dancing Script', font: "'Dancing Script', cursive"},
+                {name: 'Satisfy', clean: 'Satisfy', font: "'Satisfy', cursive"}, 
+                {name: 'Sacramento', clean: 'Sacramento', font: "'Sacramento', cursive"},
+                {name: 'Shadows Into Light', clean: 'Shadows Into Light', font: "'Shadows Into Light', cursive"}, 
+                {name: 'Indie Flower', clean: 'Indie Flower', font: "'Indie Flower', cursive"},
+                {name: 'Great Vibes', clean: 'Great Vibes', font: "'Great Vibes', cursive"},
+                {name: 'Alex Brush', clean: 'Alex Brush', font: "'Alex Brush', cursive"},
+                {name: 'Tangerine', clean: 'Tangerine', font: "'Tangerine', cursive"},
+                {name: 'Kaushan Script', clean: 'Kaushan Script', font: "'Kaushan Script', cursive"},
+                {name: 'Courgette', clean: 'Courgette', font: "'Courgette', cursive"}
+            ],
+            mixed: [
+                {name: 'Classic Serif', clean: 'Playfair Display', font: "'Playfair Display', 'Noto Serif Bengali', serif"},
+                {name: 'Modern Sans', clean: 'Roboto', font: "'Roboto', 'Noto Sans Bengali', sans-serif"},
+                {name: 'Elegant Type', clean: 'Cinzel', font: "'Cinzel', 'Tiro Bangla', serif"},
+                {name: 'Handwritten Mix', clean: 'Caveat', font: "'Caveat', 'Atma', cursive"},
+                {name: 'Friendly Round', clean: 'Poppins', font: "'Poppins', 'Baloo Da 2', sans-serif"},
+                {name: 'Formal Reading', clean: 'Merriweather', font: "'Merriweather', 'Hind Siliguri', serif"},
+                {name: 'Clean Digital', clean: 'Open Sans', font: "'Open Sans', 'Mina', sans-serif"}
+            ]
+        };
+
+        const standardSizes = [8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 48, 60, 72];
+
+        window.addEventListener('load', () => {
+            if (wrapper.children.length === 0) wrapper.appendChild(createNewPage(true));
+            const sizeMenu = document.getElementById('globalFontSizeMenu');
+            sizeMenu.innerHTML = standardSizes.map(s => `<div onclick="applyFontSizeVal(${s})" class="px-3 py-1.5 hover:bg-gray-100 cursor-pointer border-b text-center">${s}</div>`).join('');
+            
+            switchFontTab('eng', document.querySelector('.font-tab'));
+
+            const saved = localStorage.getItem('wordProCurrentDoc');
+            if(saved) { document.querySelector('.page-content').innerHTML = saved; queuePaginate(); }
+            if(window.innerWidth <= 768) setTimeout(fitToScreen, 100);
+            updateContent();
+        });
+
+        document.addEventListener('click', (e) => {
+            if(!e.target.closest('#fontBtnDisplay') && !e.target.closest('#globalFontMegaMenu')) document.getElementById('globalFontMegaMenu').classList.add('hidden');
+            if(!e.target.closest('#fontSizeDisplay') && !e.target.closest('#globalFontSizeMenu')) document.getElementById('globalFontSizeMenu').classList.add('hidden');
+        });
+
+        function toggleFontMenu(btn) {
+            saveSelection();
+            const menu = document.getElementById('globalFontMegaMenu');
+            const rect = btn.getBoundingClientRect();
+            menu.style.top = (rect.bottom + 2) + 'px';
+            menu.style.left = Math.max(10, rect.left) + 'px'; 
+            menu.classList.toggle('hidden');
+            document.getElementById('globalFontSizeMenu').classList.add('hidden');
+        }
+
+        function toggleFontSizeMenu(btn) {
+            saveSelection();
+            const menu = document.getElementById('globalFontSizeMenu');
+            const rect = btn.getBoundingClientRect();
+            menu.style.top = (rect.bottom + 2) + 'px';
+            menu.style.left = rect.left + 'px';
+            menu.classList.toggle('hidden');
+            document.getElementById('globalFontMegaMenu').classList.add('hidden');
+        }
+
+        function switchFontTab(tabId, btnElement) {
+            document.querySelectorAll('.font-tab').forEach(t => t.classList.remove('border-blue-600', 'text-blue-600'));
+            document.querySelectorAll('.font-tab').forEach(t => t.classList.add('border-transparent', 'text-gray-600'));
+            if(btnElement) {
+                btnElement.classList.remove('border-transparent', 'text-gray-600');
+                btnElement.classList.add('border-blue-600', 'text-blue-600');
+            }
+
+            const content = document.getElementById('fontTabContent');
+            const sampleText = (tabId === 'ben' || tabId === 'mixed') ? 'বাংলা ভাষার সুন্দর লেখা - The quick brown fox' : 'The quick brown fox jumps over the lazy dog';
+            
+            content.innerHTML = fontData[tabId].map(f => `
+                <div onclick="applyFontName('${f.clean}', '${f.font}', '${f.name}')" class="p-2 hover:bg-blue-50 cursor-pointer border-b border-gray-100 flex flex-col group">
+                    <span class="text-[10px] text-gray-400 group-hover:text-blue-600 font-sans mb-1 uppercase tracking-wider">${f.name}</span>
+                    <span style="font-family: ${f.font}; font-size: 18px; color: #1f2937; line-height:1.2;" class="truncate">
+                        ${sampleText}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        function applyFontName(cleanName, fullStack, shortName) {
+            restoreSelection(); 
+            const sel = window.getSelection();
+            if (!sel.rangeCount || sel.isCollapsed) {
+                document.querySelectorAll('.page-content').forEach(page => {
+                    page.style.fontFamily = fullStack;
+                    page.querySelectorAll('*').forEach(el => el.style.fontFamily = fullStack);
+                });
+            } else {
+                document.execCommand('fontName', false, cleanName);
+                document.querySelectorAll('font[face]').forEach(el => {
+                    el.style.fontFamily = fullStack;
+                    el.removeAttribute('face');
+                });
+                document.querySelectorAll('span[style*="font-family"]').forEach(el => {
+                    el.style.fontFamily = fullStack;
+                });
+            }
+            document.getElementById('currentFontDisplay').innerText = shortName.split(' ')[0];
+            document.getElementById('globalFontMegaMenu').classList.add('hidden');
+            if(activeEditor) activeEditor.focus();
+            updateContent(); queuePaginate();
+        }
+
+        function applyFontSizeVal(sizePx) {
+            restoreSelection(); 
+            const sel = window.getSelection();
+            if (!sel.rangeCount || sel.isCollapsed) {
+                document.querySelectorAll('.page-content').forEach(page => {
+                    page.style.fontSize = sizePx + 'px';
+                    page.querySelectorAll('*').forEach(el => el.style.fontSize = sizePx + 'px');
+                });
+            } else {
+                document.execCommand('fontSize', false, '7');
+                document.querySelectorAll('font[size="7"], span[style*="xx-large"], span[style*="300%"]').forEach(el => {
+                    el.removeAttribute('size');
+                    el.style.fontSize = sizePx + 'px';
+                    el.style.lineHeight = 'normal';
+                });
+            }
+            
+            document.getElementById('currentFontSize').innerText = sizePx;
+            document.getElementById('globalFontSizeMenu').classList.add('hidden');
+            if(activeEditor) activeEditor.focus();
+            updateContent(); queuePaginate();
+        }
+
+        function changeFontSizeBy(dir) {
+            let current = parseInt(document.getElementById('currentFontSize').innerText) || 16;
+            let index = standardSizes.indexOf(current);
+            if (index === -1) {
+                standardSizes.push(current);
+                standardSizes.sort((a,b)=>a-b);
+                index = standardSizes.indexOf(current);
+            }
+            let newIndex = Math.max(0, Math.min(standardSizes.length - 1, index + dir));
+            saveSelection();
+            applyFontSizeVal(standardSizes[newIndex]);
+        }
+
+        document.addEventListener('selectionchange', () => {
+            if (!activeEditor || !document.activeElement.closest('.page-content')) return;
+            
+            const sel = window.getSelection();
+            if (sel.rangeCount > 0) {
+                let node = sel.anchorNode;
+                if (node.nodeType === 3) node = node.parentNode;
+                if (node && node.closest('.page-content')) {
+                    const computed = window.getComputedStyle(node);
+                    let size = computed.fontSize;
+                    if (size) document.getElementById('currentFontSize').innerText = parseInt(size);
+                    let family = computed.fontFamily;
+                    if (family) {
+                        let displayName = family.split(',')[0].replace(/["']/g, '');
+                        if (displayName.length > 12) displayName = displayName.substring(0, 10) + '...';
+                        document.getElementById('currentFontDisplay').innerText = displayName;
+                    }
+                }
+            }
+        });
+
+        // --- Custom Modal System ---
+        function showModal(title, message, type, defaultVal, callback) {
+            const modal = document.getElementById('customModal');
+            document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-circle-info"></i> ${title}`;
+            document.getElementById('modalMessage').textContent = message;
+            const input = document.getElementById('modalInput');
+            
+            if (type === 'prompt') {
+                input.classList.remove('hidden'); input.value = defaultVal || ''; setTimeout(() => input.focus(), 100);
+            } else { input.classList.add('hidden'); }
+            
+            modal.classList.remove('hidden');
+            const handleOk = () => { cleanup(); callback(type === 'prompt' ? input.value : true); };
+            const handleCancel = () => { cleanup(); if (type === 'prompt') callback(null); else callback(false); };
+            const cleanup = () => {
+                modal.classList.add('hidden');
+                document.getElementById('modalOk').removeEventListener('click', handleOk);
+                document.getElementById('modalCancel').removeEventListener('click', handleCancel);
+            };
+            document.getElementById('modalOk').addEventListener('click', handleOk);
+            document.getElementById('modalCancel').addEventListener('click', handleCancel);
+        }
+        function customPrompt(title, message, defaultVal, callback) { showModal(title, message, 'prompt', defaultVal, callback); }
+        function customConfirm(title, message, callback) { showModal(title, message, 'confirm', null, callback); }
+
+        // সিলেকশন সেভ এবং রিস্টোর (Selection save and restore functions)
+        function saveSelection() {
+            if (window.getSelection) {
+                const sel = window.getSelection();
+                if (sel.getRangeAt && sel.rangeCount) savedRange = sel.getRangeAt(0);
+            }
+        }
+        function restoreSelection() {
+            if (savedRange && window.getSelection) {
+                const sel = window.getSelection();
+                sel.removeAllRanges(); sel.addRange(savedRange);
+            }
+        }
+
+        // কালার অ্যাপ্লাই করার জন্য নতুন ফাংশন (New function for applying exact colors)
+        function applyColor(cmd, value) {
+            restoreSelection();
+            document.execCommand(cmd, false, value);
+            if(activeEditor) activeEditor.focus();
+            updateContent(); queuePaginate();
+        }
+
+        // ক্লিপবোর্ড ফাংশন ফিক্স (Fixed Clipboard functions)
+        async function customPaste() {
+            try {
+                const text = await navigator.clipboard.readText();
+                restoreSelection();
+                document.execCommand('insertText', false, text);
+                if(activeEditor) activeEditor.focus();
+                updateContent(); queuePaginate();
+            } catch (err) {
+                showToast("Paste permission denied. Please use Ctrl+V");
+            }
+        }
+        
+        function customCut() {
+            restoreSelection();
+            document.execCommand('cut');
+            updateContent(); queuePaginate();
+            showToast("Cut to clipboard");
+        }
+
+        // ================= AUTOMATIC PAGINATION ENGINE =================
+        let isPaginating = false;
+        let paginationTimeout;
+
+        function createNewPage(isFirst = false) {
+            const pageCount = isFirst ? 1 : wrapper.querySelectorAll('.page').length + 1;
+            const existingHeader = document.querySelector('.page-header');
+            const dateOptions = { day: 'numeric', month: 'long', year: 'numeric' };
+            const todayFormatted = "Date: " + new Date().toLocaleDateString('en-GB', dateOptions);
+
+            const defaultHeaderHtml = `
+                <div class="compact-header">
+                    <div class="flex flex-col gap-0 pl-2 flex-1 border-l-[3px] border-blue-600 justify-center">
+                        <div class="uppercase text-gray-800 font-bold flex items-center gap-1.5" style="font-family: 'Montserrat', sans-serif; font-size: 10px;">
+                            <i class="fa-solid fa-phone-volume text-[10px] text-blue-700"></i><span contenteditable="true" class="header-edit">9735299131</span>
+                        </div>
+                        <div class="uppercase text-gray-800 font-bold flex items-center gap-1.5" style="font-family: 'Montserrat', sans-serif; font-size: 10px;">
+                            <i class="fa-solid fa-pen-nib text-[10px] text-blue-700"></i><span contenteditable="true" class="header-edit">By Munir Sir</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-center justify-center flex-[2] text-center pb-0">
+                        <span contenteditable="true" class="header-edit font-black uppercase text-blue-900 text-3d whitespace-nowrap" style="font-family: 'Cinzel', serif; font-size: 20px; letter-spacing: 1px; line-height: 1;">
+                            Glorious Study Point
+                        </span>
+                        <div contenteditable="true" class="header-edit topic-edit outline-none font-bold text-center mt-[2px] px-2 py-0.5 shadow-sm w-full max-w-[250px]" style="font-family: 'Baloo Da 2', serif; font-size: 14px; color: #b91c1c; border-bottom: 1px dashed #93c5fd;" data-placeholder="এখানে টপিক/সাবজেক্ট লিখুন..."></div>
+                    </div>
+                    <div class="flex flex-col items-end gap-0 flex-1 text-right justify-center">
+                        <span contenteditable="true" class="header-edit font-bold text-gray-800 uppercase border-b border-gray-400 pb-[1px]" style="font-family: 'Oswald', sans-serif; font-size: 11px; letter-spacing: 0.5px;">English Study Materials</span>
+                        <span class="text-gray-600 font-bold mt-[2px]" style="font-family: 'Montserrat', sans-serif; font-size: 9px;">${todayFormatted}</span>
+                    </div>
+                </div>`;
+            const headerHtml = existingHeader ? existingHeader.innerHTML : defaultHeaderHtml;
+            
+            const borderHtml = `
+                <div class="page-border-layer ${currentBorderStyle}">
+                    <div class="pb-tl corner"></div><div class="pb-tr corner"></div><div class="pb-bl corner"></div><div class="pb-br corner"></div>
+                    <div class="pb-text pb-top">
+                        <span><i class="fa-solid fa-house" style="color:#d97706;"></i> GLORIOUS STUDY POINT</span>
+                        <span style="color: black;"><i class="fa-solid fa-book-open" style="color: #dc2626;"></i> ENGLISH</span>
+                        <span><i class="fa-solid fa-phone-volume"></i> 9735299131</span>
+                    </div>
+                    <div class="pb-text pb-bottom"><span><i class="fa-solid fa-pen-nib"></i> PREPARED BY MUNIR SIR</span></div>
+                    <div class="pb-text pb-left"><span>GLORIOUS STUDY POINT</span></div><div class="pb-text pb-right"><span>GLORIOUS STUDY POINT</span></div>
+                </div>`;
+            
+            const page = document.createElement('div');
+            page.className = 'page';
+            
+            page.innerHTML = `
+                ${borderHtml}
+                <div class="page-header">${headerHtml}</div>
+                <div class="page-content" contenteditable="true" data-placeholder="Type your document here..." spellcheck="${isSpellCheck}" style="font-size: 16px;"></div>
+                <div class="page-footer text-center text-xs opacity-40 italic" style="border-top: none;">Page numbers will auto-generate on PDF/Print</div>
+            `;
+            return page;
+        }
+
+        function toggleDecorations(isVisible) {
+            if (isVisible) {
+                document.body.classList.remove('hide-decorations');
+                showToast("Header & Border Enabled");
+            } else {
+                document.body.classList.add('hide-decorations');
+                showToast("Header & Border Disabled");
+            }
+        }
+
+        function changeBorderStyle(styleClass) {
+            currentBorderStyle = styleClass;
+            document.querySelectorAll('.page-border-layer').forEach(layer => layer.className = `page-border-layer ${styleClass}`);
+            showToast("Border Style Updated");
+        }
+
+        function chunkTextNodes(element) {
+            let walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
+            let textNodes = [], node;
+            while (node = walker.nextNode()) if (node.nodeValue.trim().length > 5 && !node.parentNode.classList.contains('p-chunk')) textNodes.push(node);
+            let changed = false;
+            textNodes.forEach(txtNode => {
+                let words = txtNode.nodeValue.split(/(\s+)/); 
+                let fragment = document.createDocumentFragment();
+                words.forEach(w => {
+                    if (w.trim()) { let span = document.createElement('span'); span.className = 'p-chunk'; span.textContent = w; fragment.appendChild(span); }
+                    else fragment.appendChild(document.createTextNode(w));
+                });
+                txtNode.parentNode.replaceChild(fragment, txtNode); changed = true;
+            });
+            return changed;
+        }
+
+        function paginate() {
+            if (isPaginating) return;
+            isPaginating = true;
+            saveSelection();
+
+            let pages = wrapper.querySelectorAll('.page');
+            for (let i = 0; i < pages.length; i++) {
+                let pageContent = pages[i].querySelector('.page-content');
+                let safety = 0;
+                while (pageContent.scrollHeight > pageContent.clientHeight && safety < 1000) {
+                    let lastChild = pageContent.lastChild;
+                    if (!lastChild) break;
+                    
+                    if (lastChild.nodeType === 1 && !lastChild.hasAttribute('data-chunked') && !['TABLE', 'IMG'].includes(lastChild.tagName)) {
+                        chunkTextNodes(lastChild); lastChild.setAttribute('data-chunked', 'true');
+                    }
+
+                    let nextPage = pages[i + 1];
+                    if (!nextPage) { nextPage = createNewPage(); wrapper.appendChild(nextPage); pages = wrapper.querySelectorAll('.page'); }
+                    let nextContent = nextPage.querySelector('.page-content');
+
+                    if (lastChild.nodeType === 1 && ['DIV', 'P', 'UL', 'OL', 'LI', 'SPAN', 'B', 'I', 'U', 'STRONG', 'EM'].includes(lastChild.tagName.toUpperCase()) && lastChild.childNodes.length > 0) {
+                        let clone;
+                        if (nextContent.firstChild && nextContent.firstChild.nodeType === 1 && nextContent.firstChild.tagName === lastChild.tagName && nextContent.firstChild.classList.contains('split-clone')) clone = nextContent.firstChild;
+                        else { clone = lastChild.cloneNode(false); clone.classList.add('split-clone'); nextContent.insertBefore(clone, nextContent.firstChild); }
+                        
+                        let movedChild = false;
+                        while (pageContent.scrollHeight > pageContent.clientHeight && lastChild.lastChild) {
+                            clone.insertBefore(lastChild.lastChild, clone.firstChild); movedChild = true;
+                        }
+                        if (!movedChild) nextContent.insertBefore(lastChild, nextContent.firstChild);
+                        else if (lastChild.childNodes.length === 0) lastChild.remove();
+                    } else nextContent.insertBefore(lastChild, nextContent.firstChild);
+                    safety++;
+                }
+
+                if (pages[i + 1]) {
+                    let nextContent = pages[i + 1].querySelector('.page-content');
+                    let underflowSafety = 0;
+                    while (pageContent.scrollHeight <= pageContent.clientHeight && nextContent.firstChild && underflowSafety < 1000) {
+                        let lastBlock = pageContent.lastChild, firstNextBlock = nextContent.firstChild, pulled = false;
+                        if (lastBlock && firstNextBlock && lastBlock.nodeType === 1 && firstNextBlock.nodeType === 1 && lastBlock.tagName === firstNextBlock.tagName && firstNextBlock.classList.contains('split-clone')) {
+                            if (firstNextBlock.firstChild) {
+                                let nodeToMove = firstNextBlock.firstChild; lastBlock.appendChild(nodeToMove);
+                                if (pageContent.scrollHeight > pageContent.clientHeight) { firstNextBlock.insertBefore(nodeToMove, firstNextBlock.firstChild); break; }
+                                pulled = true;
+                            }
+                            if (firstNextBlock.childNodes.length === 0) firstNextBlock.remove();
+                        }
+                        if (!pulled) {
+                            let nodeToMove = nextContent.firstChild; pageContent.appendChild(nodeToMove);
+                            if (pageContent.scrollHeight > pageContent.clientHeight) { nextContent.insertBefore(nodeToMove, nextContent.firstChild); break; }
+                        }
+                        underflowSafety++;
+                    }
+                    if (nextContent.childNodes.length === 0 || nextContent.innerText.trim() === '') { pages[i + 1].remove(); pages = wrapper.querySelectorAll('.page'); }
+                }
+            }
+            restoreSelection(); isPaginating = false;
+        }
+
+        function queuePaginate() { clearTimeout(paginationTimeout); paginationTimeout = setTimeout(paginate, 150); }
+
+        wrapper.addEventListener('input', (e) => {
+            if (e.target.classList.contains('page-content')) { updateContent(); queuePaginate(); }
+            else if (e.target.closest('.page-header')) {
+                const sourceHeader = e.target.closest('.page-header'), text = sourceHeader.innerHTML;
+                document.querySelectorAll('.page-header').forEach(h => { if (h !== sourceHeader) h.innerHTML = text; });
+            }
+        });
+
+        wrapper.addEventListener('focusin', (e) => { if (e.target.classList.contains('page-content')) activeEditor = e.target; });
+        wrapper.addEventListener('paste', (e) => {
+            if (e.target.classList.contains('page-content')) setTimeout(() => { updateContent(); queuePaginate(); }, 100);
+        });
+
+        function switchTab(tabElement, tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.ribbon-groups').forEach(content => content.classList.remove('active'));
+            tabElement.classList.add('active'); document.getElementById(tabId).classList.add('active');
+        }
+
+        // ================= ADVANCED ZOOM SYSTEM =================
+        const workspaceEl = document.getElementById('editor-screen');
+        let pinchStartDistance = 0, pinchStartZoom = 0, lastTapTime = 0;
+
+        workspaceEl.addEventListener('touchstart', function(e) {
+            if (e.touches.length === 2) {
+                e.preventDefault(); 
+                pinchStartDistance = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY); pinchStartZoom = currentZoom;
+            }
+        }, {passive: false});
+
+        workspaceEl.addEventListener('touchmove', function(e) {
+            if (e.touches.length === 2) {
+                e.preventDefault(); 
+                const dist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY); setZoom(Math.round(pinchStartZoom * (dist / pinchStartDistance)));
+            }
+        }, {passive: false});
+
+        workspaceEl.addEventListener('touchend', function(e) {
+            if (e.touches.length === 0 && e.changedTouches.length === 1) {
+                const t = new Date().getTime(), tapL = t - lastTapTime;
+                if (tapL < 300 && tapL > 0) { e.preventDefault(); currentZoom > 110 ? fitToScreen() : setZoom(150); }
+                lastTapTime = t;
+            }
+        });
+
+        function setZoomByBtn(factor) { setZoom(Math.round(currentZoom * factor)); }
+        function setZoom(val) {
+            currentZoom = Math.max(30, Math.min(250, parseInt(val)));
+            document.getElementById('zoomWrapper').style.transform = `scale(${currentZoom / 100})`;
+            document.getElementById('zoomDisplay').innerText = currentZoom + '%';
+            document.getElementById('zoomSlider').value = currentZoom;
+        }
+
+        function fitToScreen() {
+            const screenWidth = workspaceEl.clientWidth, editorWidth = wrapper.offsetWidth || 794; 
+            setZoom(Math.floor(((screenWidth - 20) / editorWidth) * 100)); showToast("Fit to Screen Applied");
+        }
+
+        function changeColumns(val) {
+            document.querySelectorAll('.page-content').forEach(p => {
+                p.style.columnCount = val; p.style.columnGap = '10mm'; p.style.columnRule = val > 1 ? '1px solid #cbd5e1' : 'none';
+            });
+            showToast(`${val} Column(s) Layout Applied`); queuePaginate();
+        }
+
+        function insertTable() {
+            saveSelection();
+            customPrompt('Insert Table', 'Number of rows:', '3', (rows) => {
+                if (!rows || isNaN(rows)) return;
+                customPrompt('Insert Table', 'Number of columns:', '3', (cols) => {
+                    if (!cols || isNaN(cols)) return;
+                    restoreSelection();
+                    let html = `<br><table style="width:100%; border-collapse:collapse; margin:10px 0;"><tbody>`;
+                    for(let r=0; r<rows; r++) { html += `<tr>`; for(let c=0; c<cols; c++) html += `<td style="border:1px solid #999; padding:5px;">Cell</td>`; html += `</tr>`; }
+                    html += `</tbody></table><br>`;
+                    execCmd('insertHTML', html);
+                });
+            });
+        }
+        
+        function insertLink() { saveSelection(); customPrompt('Insert Hyperlink', 'Enter URL:', 'https://', (url) => { if (url) { restoreSelection(); execCmd('createLink', url); }}); }
+        function insertImage(input) { if (input.files && input.files[0]) { const reader = new FileReader(); reader.onload = function(e) { execCmd('insertHTML', `<img src="${e.target.result}" style="max-width:100%; height:auto; margin:10px 0;" />`); }; reader.readAsDataURL(input.files[0]); } }
+
+        function toggleSpellCheck() { isSpellCheck = !isSpellCheck; document.querySelectorAll('.page-content').forEach(p => p.setAttribute('spellcheck', isSpellCheck)); document.getElementById('spellIcon').style.color = isSpellCheck ? '#16a34a' : '#9ca3af'; }
+        function toggleShareDropdown() { document.getElementById('shareDropdown').classList.toggle('hidden'); }
+        document.addEventListener('click', function(e) { const container = document.getElementById('shareDropdownContainer'); if (container && !container.contains(e.target)) document.getElementById('shareDropdown').classList.add('hidden'); });
+
+        function changePageSize(val) {
+            const [format, orientation, w, h] = val.split(',');
+            document.documentElement.style.setProperty('--page-width', Math.round(parseFloat(w) * 3.7795) + 'px');
+            document.documentElement.style.setProperty('--page-height', Math.round(parseFloat(h) * 3.7795) + 'px');
+            showToast(`Page layout updated to ${format.toUpperCase()}`); queuePaginate();
+        }
+
+        function changeMargin(val) {
+            document.documentElement.style.setProperty('--page-margin', Math.round(parseFloat(val) * 3.7795) + 'px');
+            showToast("Margins updated"); queuePaginate();
+        }
+        
+        changePageSize("a4,portrait,210,297"); changeMargin("12.7"); 
+
+        function showToast(message) {
+            const toast = document.getElementById('toast'); document.getElementById('toastMessage').textContent = message;
+            toast.classList.remove('opacity-0'); setTimeout(() => toast.classList.add('opacity-0'), 3000);
+        }
+
+        function execCmd(cmd, value=null) {
+            document.execCommand(cmd, false, value);
+            if (activeEditor) activeEditor.focus();
+            updateContent(); queuePaginate();
+        }
+        
+        function createNewDocument() {
+            customConfirm('New Document', 'Are you sure you want to create a new file? Unsaved changes will be cleared.', (yes) => {
+                if(yes) {
+                    wrapper.innerHTML = '';
+                    wrapper.appendChild(createNewPage(true));
+                    localStorage.removeItem('wordProCurrentDoc');
+                    updateContent();
+                    queuePaginate();
+                    showToast("New File Created!");
+                }
+            });
+        }
+
+        function findText() { customPrompt('Find', 'Enter text to find:', '', (text) => { if(text) window.find(text); }); }
+        function replaceText() {
+            saveSelection();
+            customPrompt('Replace', 'Find what text?', '', (find) => {
+                if(!find) return;
+                customPrompt('Replace', 'Replace with?', '', (replace) => {
+                    if(replace === null) return;
+                    let replacedCount = 0; restoreSelection(); if(activeEditor) activeEditor.focus();
+                    while(window.find(find, false, false, true, false, false, false)) { document.execCommand('insertText', false, replace); replacedCount++; }
+                    showToast(`Replaced ${replacedCount} instances.`);
+                });
+            });
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey) {
+                switch(e.key.toLowerCase()) {
+                    case 's': e.preventDefault(); autoSave(); showToast("Saved via shortcut"); break;
+                    case 'b': e.preventDefault(); execCmd('bold'); break;
+                    case 'i': e.preventDefault(); execCmd('italic'); break;
+                    case 'u': e.preventDefault(); execCmd('underline'); break;
+                    case 'p': e.preventDefault(); printDocument(); break;
+                    case 'z': 
+                        if (lastAutoAction === 'autofix' && isAutoFixActive) { e.preventDefault(); applyAutoFix(); lastAutoAction = null; } 
+                        else if (lastAutoAction === 'autobold' && isAutoBoldActive) { e.preventDefault(); applyAutoBold(); lastAutoAction = null; }
+                        break;
+                }
+            }
+        });
+
+        function changeLineSpacing(level) {
+            document.querySelectorAll('.page-content').forEach(p => { p.className = p.className.replace(/l-spacing-\d+/g, ''); p.classList.add(`l-spacing-${level}`); });
+            updateContent(); queuePaginate();
+        }
+
+        function getFullHTML() { return Array.from(document.querySelectorAll('.page-content')).map(p => p.innerHTML).join('<br>'); }
+        function getFullText() { return Array.from(document.querySelectorAll('.page-content')).map(p => p.innerText).join('\n'); }
+
+        function autoSave() { localStorage.setItem('wordProCurrentDoc', getFullHTML()); } setInterval(autoSave, 60000); 
+
+        function openHistoryModal() { renderHistoryList(); document.getElementById('historyModal').classList.remove('hidden'); }
+        function closeHistoryModal() { document.getElementById('historyModal').classList.add('hidden'); }
+        
+        function saveNewFile() {
+            const name = document.getElementById('newFileName').value || 'Document1 - Word';
+            let histories = JSON.parse(localStorage.getItem('wordProHistories') || '[]');
+            histories.unshift({ id: Date.now(), title: name, date: new Date().toLocaleString(), content: getFullHTML() });
+            localStorage.setItem('wordProHistories', JSON.stringify(histories));
+            document.getElementById('newFileName').value = ''; renderHistoryList(); showToast("Document saved");
+        }
+
+        function renderHistoryList() {
+            const list = document.getElementById('historyList'); let histories = JSON.parse(localStorage.getItem('wordProHistories') || '[]');
+            if(histories.length === 0) { list.innerHTML = `<div class="text-center text-gray-500 py-4 text-sm">No saved files.</div>`; return; }
+            list.innerHTML = histories.map(item => `
+                <div class="border border-gray-300 p-2 flex justify-between items-center hover:bg-gray-50 cursor-pointer">
+                    <div onclick="loadHistory(${item.id})" class="flex-1"><p class="font-semibold text-sm text-[#2b579a]"><i class="fa-regular fa-file-word mr-1"></i> ${item.title}</p><p class="text-[10px] text-gray-500">${item.date}</p></div>
+                    <button onclick="deleteHistory(${item.id})" class="px-2 py-1 text-red-500 hover:bg-red-100 rounded text-xs"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function loadHistory(id) {
+            customConfirm('Open File', 'Opening this file will replace current text. Continue?', (yes) => {
+                if(yes) {
+                    let histories = JSON.parse(localStorage.getItem('wordProHistories') || '[]');
+                    const history = histories.find(h => h.id === id);
+                    if(history) { 
+                        wrapper.innerHTML = ''; wrapper.appendChild(createNewPage(true));
+                        document.querySelector('.page-content').innerHTML = history.content; 
+                        updateContent(); queuePaginate(); closeHistoryModal(); showToast("File opened"); 
+                    }
+                }
+            });
+        }
+        function deleteHistory(id) {
+            customConfirm('Delete File', 'Delete this file permanently?', (yes) => {
+                if(yes) {
+                    let histories = JSON.parse(localStorage.getItem('wordProHistories') || '[]');
+                    localStorage.setItem('wordProHistories', JSON.stringify(histories.filter(h => h.id !== id))); renderHistoryList();
+                }
+            });
+        }
+
+        function applyAutoFix() {
+            if (isAutoFixActive && preAutoFixState) {
+                wrapper.innerHTML = ''; wrapper.appendChild(createNewPage(true)); document.querySelector('.page-content').innerHTML = preAutoFixState;
+                updateContent(); queuePaginate(); isAutoFixActive = false;
+                document.getElementById('btnAutoFix').classList.remove('ring-2', 'ring-green-400', 'bg-green-100'); showToast("AutoFix Reverted!"); return;
+            }
+            let fullHTML = getFullHTML(); if (!fullHTML.trim() && !wrapper.querySelector('img, table')) return;
+            
+            preAutoFixState = fullHTML; isAutoFixActive = true; lastAutoAction = 'autofix';
+            document.getElementById('btnAutoFix').classList.add('ring-2', 'ring-green-400', 'bg-green-100');
+            let tempDiv = document.createElement('div'); tempDiv.innerHTML = fullHTML;
+            
+            function cleanSpaces(node) {
+                if (node.nodeType === 3) node.nodeValue = node.nodeValue.replace(/[ \t\u00A0]{2,}/g, ' ');
+                else if (node.nodeType === 1 && !['TABLE', 'IMG', 'PRE'].includes(node.tagName)) node.childNodes.forEach(cleanSpaces);
+            }
+            cleanSpaces(tempDiv);
+            
+            tempDiv.querySelectorAll('div, p, h1, h2, h3, h4, h5, h6').forEach(b => { 
+                let innerTextCheck = b.innerHTML.replace(/&nbsp;/g, '').trim();
+                if ((innerTextCheck === '' || innerTextCheck === '<br>') && !b.querySelector('img, table, hr, iframe, svg')) b.remove(); 
+            });
+
+            let cleanedHTML = tempDiv.innerHTML.replace(/(<br\s*\/?>\s*){2,}/gi, '<br>');
+            wrapper.innerHTML = ''; wrapper.appendChild(createNewPage(true));
+            document.querySelector('.page-content').innerHTML = cleanedHTML;
+            updateContent(); queuePaginate(); showToast("AutoFix Applied! Click again to revert.");
+        }
+
+        // ================== সম্পূর্ণ নতুন এবং বুদ্ধিমান AUTO BOLD ইঞ্জিন ==================
+        function applyAutoBold() {
+            // Revert Logic (Undo by clicking again or Ctrl+Z)
+            if (isAutoBoldActive && preAutoBoldState) {
+                wrapper.innerHTML = ''; 
+                wrapper.appendChild(createNewPage(true)); 
+                document.querySelector('.page-content').innerHTML = preAutoBoldState;
+                updateContent(); 
+                queuePaginate(); 
+                isAutoBoldActive = false;
+                document.getElementById('btnAutoBold').classList.remove('ring-2', 'ring-purple-400', 'bg-purple-100'); 
+                showToast("Auto Bold Reverted!"); 
+                return;
+            }
+
+            let fullHTML = getFullHTML(); 
+            if (!fullHTML.trim()) return;
+            
+            // Save state for undo
+            preAutoBoldState = fullHTML; 
+            isAutoBoldActive = true; 
+            lastAutoAction = 'autobold';
+            document.getElementById('btnAutoBold').classList.add('ring-2', 'ring-purple-400', 'bg-purple-100');
+            
+            let itemsBolded = 0;
+            const sel = window.getSelection();
+            const hasSelection = sel.rangeCount > 0 && !sel.isCollapsed && sel.toString().trim().length > 0;
+            let range = hasSelection ? sel.getRangeAt(0) : null;
+
+            // Process pages
+            document.querySelectorAll('.page-content').forEach(page => {
+                itemsBolded += processAutoBoldContainer(page, range);
+            });
+
+            updateContent(); 
+            queuePaginate(); 
+            
+            if (itemsBolded > 0) {
+                showToast(`Auto Bold complete — ${itemsBolded} important items detected.`);
+            } else {
+                showToast("No suitable questions, headings or important text were detected.");
+            }
+        }
+        
+        function processAutoBoldContainer(container, range) {
+            let count = 0;
+            
+            // Helper function to decide if text is logically bold-able
+            function shouldBeBold(text) {
+                 let t = text.trim();
+                 if (!t) return false;
+                 
+                 // ১. MCQ অপশন বাদ দেওয়া হচ্ছে, তবে প্রশ্নবোধক চিহ্ন থাকলে Bold হবে।
+                 if (/^(\([a-j]\)|[a-j][\.\)]|[ivx]+[\.\)]|\([ivx]+\)|\([ক-ঞ]\)|[ক-ঞ][\.\)])\s+/i.test(t) && !t.includes('?')) return false;
+                 
+                 // ২. পরীক্ষার হেডলাইন/সেকশন (Exam Meta)
+                 if (/^(Full Marks|Time|Section [a-z0-9]|Group [a-z0-9]|বিভাগ [ক-ঞ])/i.test(t)) return true;
+                 
+                 // ৩. গুরুত্বপূর্ণ নির্দেশাবলী এবং কীওয়ার্ড (Instructions & Keywords)
+                 if (/^(Introduction|Conclusion|Summary|Important|Note|Example|Definition|Explanation|Answer|Solution|Question|Exercise|Instructions|Chapter|Part|Topic|Key Points|গুরুত্বপূর্ণ|নোট|উদাহরণ|সংজ্ঞা|উত্তর|প্রশ্ন|ব্যাখ্যা|নির্দেশাবলী|অধ্যায়|অংশ)\b/i.test(t)) return true;
+                 if (/^(Answer the following|Choose the correct|Fill in the blanks|True or false|Write short notes|Read the passage|নিচের প্রশ্ন|সঠিক উত্তর|শূন্যস্থান|সংক্ষিপ্ত উত্তর|Write short answers|Long Answer Questions)/i.test(t)) return true;
+                 
+                 // ৪. প্রশ্নবোধক বাক্য ও শব্দ (Questions & WH words)
+                 if (t.endsWith('?') || t.endsWith('？')) return true;
+                 if (/^(who|what|when|where|why|which|how|কী|কেন|কীভাবে|কোথায়|কবে|কে|কোন|কাকে)\b/i.test(t)) return true;
+                 
+                 // ৫. প্রশ্ন নম্বর (Question Numbers)
+                 if (/^(\d+[\.\)]|\(\d+\)|q\d+[\.\-: ]?|question\s*\d+|প্রশ্ন\s*\d*[\.\-: ]?|[\u09E6-\u09EF]+[\.\)]|\([\u09E6-\u09EF]+\))\s+/i.test(t)) return true;
+                 
+                 // ৬. ছোট সাব-হেডিং (Short Standalone Headings - 1 to 6 words)
+                 const words = t.split(/\s+/);
+                 if (words.length > 0 && words.length <= 6 && !/[,\.]$/.test(t) && /^[A-Z\u0980-\u09FF]/.test(t)) return true;
+                 
+                 return false;
+            }
+
+            // সাধারণ টেক্সট যেগুলো কোনো div/p এর ভেতরে নেই সেগুলোকে ব্লকে রূপান্তর
+            Array.from(container.childNodes).forEach(node => {
+                if (node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== '') {
+                    if (range && !range.intersectsNode(node)) return;
+                    let div = document.createElement('div');
+                    div.textContent = node.textContent;
+                    container.replaceChild(div, node);
+                }
+            });
+
+            // সকল ব্লক এলিমেন্ট স্ক্যান
+            const blockElements = container.querySelectorAll('div, p, li, h1, h2, h3, h4, h5, h6');
+            blockElements.forEach(el => {
+                // সিলেকশন থাকলে সিলেকশনের বাইরের এলিমেন্ট বাদ
+                if (range && !range.intersectsNode(el)) return;
+                
+                // যদি আগে থেকেই Bold থাকে তবে বাদ
+                if (el.closest('b, strong') || el.querySelector('b, strong') || ['B', 'STRONG'].includes(el.tagName)) return;
+
+                const text = el.innerText || el.textContent;
+                
+                if (shouldBeBold(text)) {
+                    // সম্পূর্ণ এলিমেন্ট Bold করা
+                    el.innerHTML = `<b>${el.innerHTML}</b>`;
+                    count++;
+                } else {
+                    // বড় প্যারাগ্রাফের ভেতরে কোনো নির্দিষ্ট প্রশ্নবোধক বাক্য থাকলে শুধু সেটিকে Bold করা
+                    let walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+                    let nodesToReplace = [];
+                    let node;
+                    while ((node = walker.nextNode())) {
+                        if (node.nodeValue.includes('?')) nodesToReplace.push(node);
+                    }
+                    
+                    nodesToReplace.forEach(textNode => {
+                        if (range && !range.intersectsNode(textNode)) return;
+                        if (textNode.parentNode.closest('b, strong')) return;
+                        
+                        const textContent = textNode.nodeValue;
+                        const sentenceRegex = /([^.!?\n]+[?？])/g; // Match sentence up to question mark
+                        
+                        if (sentenceRegex.test(textContent)) {
+                            const newHtml = textContent.replace(sentenceRegex, '<b>$1</b>');
+                            const tempSpan = document.createElement('span');
+                            tempSpan.innerHTML = newHtml;
+                            
+                            textNode.parentNode.insertBefore(tempSpan, textNode);
+                            textNode.parentNode.removeChild(textNode);
+                            
+                            while(tempSpan.firstChild) {
+                                tempSpan.parentNode.insertBefore(tempSpan.firstChild, tempSpan);
+                            }
+                            tempSpan.parentNode.removeChild(tempSpan);
+                            count++;
+                        }
+                    });
+                }
+            });
+            
+            return count;
+        }
+        // =========================================================================
+
+        function updateContent() { let text = getFullText(); document.getElementById('wordCount').innerText = text.trim() ? text.trim().split(/\s+/).length : 0; }
+
+        function downloadTxt() {
+            document.getElementById('shareDropdown').classList.add('hidden');
+            const fileDownload = document.createElement("a");
+            fileDownload.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(getFullText()); fileDownload.download = 'Document1.txt';
+            document.body.appendChild(fileDownload); fileDownload.click(); document.body.removeChild(fileDownload); showToast("Text file exported");
+        }
+        
+        function exportPDF() {
+            document.getElementById('shareDropdown').classList.add('hidden'); showToast("Generating PDF, calculating exact pages... Please wait!");
+            const opt = {
+                margin: 0, filename: 'WordPro_Document.pdf', image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, logging: false }, jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(wrapper).toPdf().get('pdf').then(function (pdf) {
+                var totalPages = pdf.internal.getNumberOfPages();
+                for (var i = 1; i <= totalPages; i++) {
+                    pdf.setPage(i); var pw = pdf.internal.pageSize.getWidth(), ph = pdf.internal.pageSize.getHeight();
+                    pdf.setFont("times", "bold"); pdf.setFontSize(12); pdf.setTextColor(0, 0, 0); 
+                    pdf.text(i.toString(), pw / 2, ph - 30, { align: 'center' });
+                }
+            }).save().then(() => showToast("PDF Downloaded successfully!")).catch((err) => { console.error(err); showToast("Error generating PDF."); });
+        }
+
+        function printDocument() {
+            const pages = document.querySelectorAll('.page');
+            let validPageIndex = 1;
+            let firstContentPageFound = false;
+
+            pages.forEach((page, index) => {
+                const content = page.querySelector('.page-content');
+                if (content) {
+                    const htmlContent = content.innerHTML.trim();
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = htmlContent;
+                    const textContent = tempDiv.textContent.trim();
+                    
+                    if (textContent === '' && !htmlContent.includes('<img') && !htmlContent.includes('<table') && index > 0) {
+                        page.classList.add('empty-page');
+                        page.classList.remove('print-first-page');
+                    } else {
+                        page.classList.remove('empty-page');
+                        
+                        if (!firstContentPageFound) {
+                            page.classList.add('print-first-page');
+                            firstContentPageFound = true;
+                        } else {
+                            page.classList.remove('print-first-page');
+                        }
+
+                        const footer = page.querySelector('.page-footer');
+                        if (footer) {
+                            footer.innerHTML = `<span style="color: black; font-weight: bold; font-family: 'Calibri', sans-serif; font-size: 11pt;">${validPageIndex}</span>`;
+                            footer.style.opacity = '1';
+                        }
+                        validPageIndex++;
+                    }
+                }
+            });
+
+            document.body.classList.add('printing');
+            setTimeout(() => { window.print(); }, 150);
+        }
+
+        window.addEventListener('afterprint', () => {
+            document.body.classList.remove('printing');
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('empty-page', 'print-first-page');
+                const footer = page.querySelector('.page-footer');
+                if (footer) {
+                    footer.innerHTML = 'Page numbers will auto-generate on PDF/Print';
+                    footer.style.opacity = '0.4';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
